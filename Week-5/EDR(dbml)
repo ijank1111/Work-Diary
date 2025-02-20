@@ -1,0 +1,55 @@
+Table Users {
+  UserID int [primary key]
+  Name varchar
+  Email varchar
+  PasswordHash varchar
+  Role varchar
+  CreatedAt timestamp
+}
+
+Table Listings {
+  ListingID int [primary key]
+  UserID int [ref: > Users.UserID]
+  Title varchar
+  Description text
+  Category varchar
+  Status varchar
+  CreatedAt timestamp
+}
+
+Table Promotions {
+  PromotionID int [primary key]
+  ListingID int [ref: > Listings.ListingID]
+  UserID int [ref: > Users.UserID]
+  StartDate date
+  EndDate date
+  Status varchar
+}
+
+Table Visits {
+  VisitID int [primary key]
+  ListingID int [ref: > Listings.ListingID]
+  UserID int [ref: > Users.UserID, null]
+  Device varchar
+  Browser varchar
+  Country varchar
+  Referrer varchar
+  Timestamp timestamp
+}
+
+Table Analytics {
+  AnalyticsID int [primary key]
+  ListingID int [ref: > Listings.ListingID]
+  Views int
+  UniqueViews int
+  Clicks int
+  Timestamp timestamp
+}
+
+Table Interactions {
+  InteractionID int [primary key]
+  UserID int [ref: > Users.UserID]
+  ListingID int [ref: > Listings.ListingID]
+  ActionType varchar
+  Timestamp timestamp
+}
