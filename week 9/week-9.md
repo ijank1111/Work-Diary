@@ -1,0 +1,2 @@
+### Sprint Week 2 Day 1
+#### The first thing I did this day of the sprint week was reading through and analising the assesment specifiacation for the second submission at the end of this sprint week. This allowed me and my group to identify and prioritise the tasks we have to complete by the end of this week which besides finishing the aplication itself also include creating a slideshow presentation of the product, testing document, and a project retospective document.
