@@ -1,0 +1,133 @@
+@startuml
+!include <C4/C4_Container>
+
+title C4 Model - Accessible App
+
+Person(admin, "Admin", "Manages the platform and user content")
+Person(owner, "Business Owner", "Registers businesses and manages listings")
+Person(user, "Browsing User", "Searches for accessible places")
+
+System(website, "Accessible App")
+
+Container(web, "Web Application", "React", "Frontend for users and business owners")
+Container(api, "Backend API", "Handles business logic and data processing")
+ContainerDb(db, "Database", "Stores user, listing, and analytics data")
+Container(storage, "File Storage",  "Stores images and media for listings")
+
+Rel(admin, website, "Manages users and content")
+Rel(owner, website, "Creates and updates listings")
+Rel(user, website, "Searches for venues and browses listings")
+
+Rel(website, api, "Requests data and submits actions via REST API")
+Rel(api, db, "Reads and writes data")
+Rel(api, storage, "Stores and retrieves media files")
+
+@enduml
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+@startuml
+
+title ERD - Accessible App Database
+
+entity "Users" as Users {
+  + UserID: int <<PK>>
+  --
+  Name: varchar
+  Email: varchar
+  PasswordHash: varchar
+  Role: varchar
+  CreatedAt: timestamp
+}
+
+entity "Listings" as Listings {
+  + ListingID: int <<PK>>
+  --
+  UserID: int <<FK>> (Users)
+  Title: varchar
+  Description: text
+  Category: varchar
+  Status: varchar
+  CreatedAt: timestamp
+}
+
+entity "Promotions" as Promotions {
+  + PromotionID: int <<PK>>
+  --
+  ListingID: int <<FK>> (Listings)
+  UserID: int <<FK>> (Users)
+  StartDate: date
+  EndDate: date
+  Status: varchar
+}
+
+entity "Visits" as Visits {
+  + VisitID: int <<PK>>
+  --
+  ListingID: int <<FK>> (Listings)
+  UserID: int <<FK, nullable>> (Users)
+  Device: varchar
+  Browser: varchar
+  Country: varchar
+  Referrer: varchar
+  Timestamp: timestamp
+}
+
+entity "Analytics" as Analytics {
+  + AnalyticsID: int <<PK>>
+  --
+  ListingID: int <<FK>> (Listings)
+  Views: int
+  UniqueViews: int
+  Clicks: int
+  Timestamp: timestamp
+}
+
+entity "Interactions" as Interactions {
+  + InteractionID: int <<PK>>
+  --
+  UserID: int <<FK>> (Users)
+  ListingID: int <<FK>> (Listings)
+  ActionType: varchar
+  Timestamp: timestamp
+}
+
+' Relationships
+Users ||--o{ Listings : "creates"
+Users ||--o{ Promotions : "manages"
+Users ||--o{ Visits : "browses"
+Users ||--o{ Interactions : "interacts"
+Listings ||--o{ Promotions : "is promoted by"
+Listings ||--o{ Visits : "is visited"
+Listings ||--o{ Analytics : "has analytics"
+Listings ||--o{ Interactions : "receives interactions"
+
+@enduml
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+@startuml
+!include <C4/C4_Container>
+
+title C4 Model - Backend API (Node.js & Laravel)
+
+Person(admin, "Admin", "Manages the platform and user content")
+Person(owner, "Business Owner", "Registers businesses and manages listings")
+Person(user, "Browsing User", "Searches for accessible places")
+
+System_Boundary(api, "Backend API (Node.js & Laravel)") {
+    Container(api_node, "Node.js Service", "Node.js", "Handles real-time updates, analytics processing")
+    Container(api_laravel, "Laravel Service", "Laravel", "Handles authentication, business logic, and CRUD operations")
+    ContainerDb(db, "Database", "MySQL", "Stores user, listing, and analytics data")
+    Container(queue, "Message Queue", "Handles background jobs for processing analytics and notifications")
+}
+
+Rel(user, api_node, "Requests data via REST API")
+Rel(admin, api_laravel, "Manages users and content")
+Rel(owner, api_laravel, "Creates and updates listings")
+
+Rel(api_node, db, "Reads and writes analytics data")
+Rel(api_laravel, db, "Handles user authentication and business data")
+Rel(api_node, queue, "Pushes analytics events for processing")
+Rel(queue, api_laravel, "Processes background jobs")
+
+@enduml
