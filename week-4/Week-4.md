@@ -1,0 +1,1 @@
+### This week our group worked on a prototype version of the website using the mockplus application as well as we organised the tasks that are need to be done as well as which team member is doing them
